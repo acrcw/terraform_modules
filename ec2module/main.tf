@@ -1,23 +1,46 @@
 
-resource "aws_instance" "aws_ec2" {
+resource "aws_instance" "aws_ec2_public" {
   ami           = data.aws_ami.ubuntu.id
   instance_type = "t2.micro"
   key_name = aws_key_pair.ssh_key.key_name
   tags = var.ec2_tags
-  vpc_security_group_ids = [aws_security_group.security_group_for_ec2.id]
+  vpc_security_group_ids = [aws_security_group.security_group_for_public_ec2.id]
 
   subnet_id = var.vpc_public_subnet_id
   user_data = file("${path.module}/../userdata/script.txt")
   associate_public_ip_address = true
   
 }
+
+resource "aws_instance" "aws_ec2_private" {
+  ami           = data.aws_ami.ubuntu.id
+  instance_type = "t2.micro"
+  key_name = aws_key_pair.ssh_key.key_name
+  tags = var.ec2_tags
+  vpc_security_group_ids = [aws_security_group.security_group_for_public_ec2.id]
+
+  subnet_id = var.vpc_private_subnet_id
+  # user_data = file("${path.module}/../userdata/script.txt")
+  # associate_public_ip_address = true
+  
+}
 resource "aws_key_pair" "ssh_key" {
   key_name   = "terraform-ssh-key"
   public_key = file("${path.module}/../keys/key.pub")
 }
-resource "aws_security_group" "security_group_for_ec2" {
- name        = "Security_group_for_ec2"
+resource "aws_security_group" "security_group_for_public_ec2" {
+ name        = "security_group_for_public_ec2"
  description = "Allow SSH,HTTPS,HTTP to web server"
+ vpc_id      = var.vpc_id
+
+ingress =[]
+
+egress =[]
+}
+
+resource "aws_security_group" "security_group_for_private_ec2" {
+ name        = "security_group_for_private_ec2"
+ description = "Allow SSH to web server"
  vpc_id      = var.vpc_id
 
 ingress =[]
@@ -32,7 +55,7 @@ resource "aws_security_group_rule" "allow_https" {
  to_port           = 443
  protocol          = "tcp"
  cidr_blocks       = ["0.0.0.0/0"]
- security_group_id = aws_security_group.security_group_for_ec2.id
+ security_group_id = aws_security_group.security_group_for_public_ec2.id
 }
 resource "aws_security_group_rule" "allow_http" {
  type              = "ingress"
@@ -41,7 +64,7 @@ resource "aws_security_group_rule" "allow_http" {
  to_port           = 80
  protocol          = "tcp"
  cidr_blocks       = ["0.0.0.0/0"]
- security_group_id = aws_security_group.security_group_for_ec2.id
+ security_group_id = aws_security_group.security_group_for_public_ec2.id
 }
 
 resource "aws_security_group_rule" "allow_ssh" {
@@ -51,14 +74,33 @@ resource "aws_security_group_rule" "allow_ssh" {
  to_port           = 22
  protocol          = "tcp"
  cidr_blocks       = ["0.0.0.0/0"]
- security_group_id = aws_security_group.security_group_for_ec2.id
+ security_group_id = aws_security_group.security_group_for_public_ec2.id
 }
-resource "aws_security_group_rule" "allow_all_traffic" {
+resource "aws_security_group_rule" "allow_ssh_private" {
+ type              = "ingress"
+ description       = "allow ssh"
+ from_port         = 22
+ to_port           = 22
+ protocol          = "tcp"
+ cidr_blocks       = ["0.0.0.0/0"]
+ security_group_id = aws_security_group.security_group_for_private_ec2.id
+}
+resource "aws_security_group_rule" "allow_all_traffic_public" {
  type              = "egress"
  description       = "allow alltraffic outgress"
  from_port         = 0
  to_port           = 0
  protocol          = "-1"
  cidr_blocks       = ["0.0.0.0/0"]
- security_group_id = aws_security_group.security_group_for_ec2.id
+ security_group_id = aws_security_group.security_group_for_public_ec2.id
+}
+
+resource "aws_security_group_rule" "allow_all_traffic_private" {
+ type              = "egress"
+ description       = "allow alltraffic outgress"
+ from_port         = 0
+ to_port           = 0
+ protocol          = "-1"
+ cidr_blocks       = ["0.0.0.0/0"]
+ security_group_id = aws_security_group.security_group_for_private_ec2.id
 }
