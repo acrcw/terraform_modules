@@ -37,13 +37,9 @@ resource "aws_route_table" "rtb_for_public_subnet" {
   }
 }
 resource "aws_route_table" "rtb_for_private_subnet" {
+  
   vpc_id = aws_vpc.vpc_for_ec2.id
-route {
-  cidr_block="10.0.128.0/20"
-  gateway_id = "local"
-  
-}
-  
+
 }
 
 

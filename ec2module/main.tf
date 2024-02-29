@@ -84,6 +84,15 @@ resource "aws_security_group_rule" "allow_ssh_private" {
  cidr_blocks       = ["0.0.0.0/0"]
  security_group_id = aws_security_group.security_group_for_private_ec2.id
 }
+resource "aws_security_group_rule" "allow_icmp_private" {
+ type              = "ingress"
+ description       = "allow icmp in private ec2"
+ from_port         = -1
+ to_port           = -1
+ protocol          = "icmp"
+ cidr_blocks       = ["0.0.0.0/0"]
+ security_group_id = aws_security_group.security_group_for_private_ec2.id
+}
 resource "aws_security_group_rule" "allow_all_traffic_public" {
  type              = "egress"
  description       = "allow alltraffic outgress"
