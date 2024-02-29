@@ -1,6 +1,11 @@
-variable "ec2_tags" {
-    type=map(any)
-    description="MAp of ec2 tags" 
+variable "ec2_tags_public" {
+    type=map(string)
+    description="Map of ec2 tags for public" 
+     
+}
+variable "ec2_tags_private" {
+    type=map(string)
+    description="Map of ec2 tags for private" 
      
 }
 variable "vpc_id"{

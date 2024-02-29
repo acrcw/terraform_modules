@@ -3,7 +3,8 @@ resource "aws_instance" "aws_ec2_public" {
   ami           = data.aws_ami.ubuntu.id
   instance_type = "t2.micro"
   key_name = aws_key_pair.ssh_key.key_name
-  tags = var.ec2_tags
+  tags = var.ec2_tags_public
+  
   vpc_security_group_ids = [aws_security_group.security_group_for_public_ec2.id]
 
   subnet_id = var.vpc_public_subnet_id
@@ -16,7 +17,7 @@ resource "aws_instance" "aws_ec2_private" {
   ami           = data.aws_ami.ubuntu.id
   instance_type = "t2.micro"
   key_name = aws_key_pair.ssh_key.key_name
-  tags = var.ec2_tags
+  tags = var.ec2_tags_private
   vpc_security_group_ids = [aws_security_group.security_group_for_private_ec2.id]
 
   subnet_id = var.vpc_private_subnet_id
