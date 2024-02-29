@@ -13,7 +13,7 @@ module "ec2" {
 terraform {
   backend "s3" {
     bucket = "group-4-bucket"
-    key    = "tfstate"
+    key    = "terraform.tfstate"
     region = "ap-south-1"
     dynamodb_table="state-locking-table"
     # assume_role = {

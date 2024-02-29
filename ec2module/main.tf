@@ -17,11 +17,10 @@ resource "aws_instance" "aws_ec2_private" {
   instance_type = "t2.micro"
   key_name = aws_key_pair.ssh_key.key_name
   tags = var.ec2_tags
-  vpc_security_group_ids = [aws_security_group.security_group_for_public_ec2.id]
+  vpc_security_group_ids = [aws_security_group.security_group_for_private_ec2.id]
 
   subnet_id = var.vpc_private_subnet_id
-  # user_data = file("${path.module}/../userdata/script.txt")
-  # associate_public_ip_address = true
+ 
   
 }
 resource "aws_key_pair" "ssh_key" {
@@ -67,7 +66,7 @@ resource "aws_security_group_rule" "allow_http" {
  security_group_id = aws_security_group.security_group_for_public_ec2.id
 }
 
-resource "aws_security_group_rule" "allow_ssh" {
+resource "aws_security_group_rule" "allow_ssh_public" {
  type              = "ingress"
  description       = "allow ssh"
  from_port         = 22
