@@ -28,7 +28,6 @@ resource "aws_subnet" "subnet_private" {
 
 resource "aws_internet_gateway" "igw_for_vpc" {
   vpc_id = aws_vpc.vpc_for_ec2.id
-
   tags = {
     Name = "igw_for_vpc"
   }
