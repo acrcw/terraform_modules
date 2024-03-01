@@ -16,17 +16,7 @@ module "ec2" {
   vpc_private_subnet_id = module.vpc.vpc_subnet_private_id
 }
 
-terraform {
-  backend "s3" {
-    bucket = "group-4-bucket"
-    key    = "terraform.tfstate"
-    region = "ap-south-1"
-    dynamodb_table="state-locking-table"
-    # assume_role = {
-    #   role_arn = "arn:aws:iam::PRODUCTION-ACCOUNT-ID:role/Terraform"
-    # }
-  }
-}
+
 
 module "vpc" {
   source = "./vpcmodule"
